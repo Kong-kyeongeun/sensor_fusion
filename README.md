@@ -1,4 +1,6 @@
 # sensor_fusion
+rplidar a3 & realsense d455 sensorfusion
+
 ---------
 ## init setting
   sudo apt-get install ros-melodic-tf2-msgs
