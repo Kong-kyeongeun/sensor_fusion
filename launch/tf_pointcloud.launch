@@ -1,0 +1,13 @@
+<launch>
+	<node pkg="sensor_fusion" type="tf_broadcast" name="tf_broadcast" output="screen">
+        <param name="/offset_x" value="3.0" />
+        <param name="/offset_y" value="0.0" />
+        <param name="/offset_z" value="0" />
+        <param name="/offset_yaw" value="0" />
+        <param name="/from_frame_id" value="/laser_frame" />
+        <param name="/to_frame_id" value="/map" />
+    </node>
+    	<node pkg="sensor_fusion" type="laser2point" name="laser2point" output="screen">
+    
+    </node>
+</launch>
