@@ -4,7 +4,7 @@
 
 merge_circle::merge_circle(){
     markerArrayPub = n.advertise<visualization_msgs::MarkerArray>("/viz_lidar_circle",1000);
-    sub_lidar_circle = n.subscribe("/raw_obstacles", 1000, &merge_circle::lidarCallback, this);
+    sub_lidar_circle = n.subscribe("/obstacles", 1000, &merge_circle::lidarCallback, this);
 }
 merge_circle::~merge_circle(){
 
@@ -37,39 +37,35 @@ visualization_msgs::Marker merge_circle::markergenerator(geometry_msgs::PoseStam
         marker.header.frame_id = "/map";
         return marker;
     }
-
-void merge_circle::lidarCallback(sensor_fusion::Obstacles  lidar_circle ){
-    geometry_msgs::PoseArray lidar_circle_array;
-    visualization_msgs::MarkerArray D_WPArray;
-    geometry_msgs::PoseStamped wp;
+    
+void merge_circle::viz_lidar_circle(){
     D_WPArray.markers.clear();
     int num = 0;
     for (auto& r : lidar_circle.circles){
-//        geometry_msgs::Pose tmp_p;
-//        tmp_p.position.x = r.c_distance *cos(r.angle * PI / 180);
-//        tmp_p.position.y = r.c_distance *sin(r.angle * PI / 180);
-//        tmp_p.position.z = r.radius;
-//        lidar_circle_array.poses.push_back(tmp_p);
         wp.pose.position.x = r.center.x;
         wp.pose.position.y = r.center.y;
         wp.pose.position.z = r.radius;
         D_WPArray.markers.push_back(markergenerator(wp,0.1,0.1,num));
         num++;
     }
-    // for (auto& pose : lidar_circle_array.poses) {
-    //     wp.pose.position.x = pose.position.x;
-    //     wp.pose.position.y = pose.position.y;
-    //     wp.pose.position.z = pose.position.z;
-    //     D_WPArray.markers.push_back(markergenerator(wp,0.1,0.1,num));
-    //     num++;
-    // }
     markerArrayPub.publish(D_WPArray);
+
+};
+
+void merge_circle::lidarCallback(sensor_fusion::Obstacles  _lidar_circle ){
+    lidar_circle = _lidar_circle;
 }
+
+void merge_circle::cameraCallback(){
+
+}
+
 int main(int argc, char** argv){
     ros::init(argc, argv, "merge_sensor");
     merge_circle mer;
     ros::Rate r(1000);
     while(ros::ok()){
+        viz_lidar_circle();
         ros::spinOnce();
         r.sleep();
     }
