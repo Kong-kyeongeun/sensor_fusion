@@ -74,11 +74,10 @@ find_package(catkin REQUIRED COMPONENTS
 #   Action2.action
 # )
 
-## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   geometry_msgs#   sensor_msgs#   std_msgs
-# )
+add_message_files(FILES CircleObstacle.msg SegmentObstacle.msg Obstacles.msg)
+generate_messages(DEPENDENCIES std_msgs geometry_msgs sensor_msgs)
+
+
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -208,6 +207,11 @@ add_executable(laser2point src/laser2point.cpp)
 target_link_libraries(laser2point
     ${catkin_LIBRARIES}
 )
+add_executable(merge_circle src/merge_circle.cpp)
+target_link_libraries(merge_circle
+    ${catkin_LIBRARIES}
+)
+
 #############
 ## Testing ##
 #############
