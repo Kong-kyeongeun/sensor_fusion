@@ -1,3 +1,4 @@
+
 #include "ros/ros.h"
 #include "laser_geometry/laser_geometry.h"
 #include "sensor_msgs/LaserScan.h"
@@ -42,5 +43,5 @@ class laser2point{
         void scanCallback(const sensor_msgs::LaserScan::ConstPtr& scan);
         void tf_laser2point();
         void pub_pointcloud();
-        bool get_transform();
+//        bool get_transform();
 };

@@ -211,6 +211,10 @@ add_executable(merge_circle src/merge_circle.cpp)
 target_link_libraries(merge_circle
     ${catkin_LIBRARIES}
 )
+add_executable(lidar_obstacle src/lidar_obstacle.cpp)
+target_link_libraries(lidar_obstacle
+    ${catkin_LIBRARIES}
+)
 
 #############
 ## Testing ##

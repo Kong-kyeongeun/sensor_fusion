@@ -10,6 +10,8 @@
 #include "sensor_fusion/SegmentObstacle.h"
 #include "point.h"
 
+using namespace sensor_fusion;
+
 class merge_circle{
     private:
         ros::NodeHandle n;
