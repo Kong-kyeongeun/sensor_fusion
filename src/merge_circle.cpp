@@ -7,6 +7,7 @@ merge_circle::merge_circle(){
     camera_markerArrayPub = n.advertise<visualization_msgs::MarkerArray>("/viz_camera_circle",1000);
     merge_markerArrayPub = n.advertise<visualization_msgs::MarkerArray>("/viz_merge_circle",1000);
     sub_lidar_circle = n.subscribe("/obstacles", 1000, &merge_circle::lidarCallback, this);
+    sub_camera_circle = n.subscribe("C_Obstacles",1000, &merge_circle::CameraCallback, this);
     
 }
 merge_circle::~merge_circle(){
@@ -55,42 +56,71 @@ void merge_circle::viz_lidar_circle(){
 
 void merge_circle::viz_merge_circle(){
     D_WPArray.markers.clear();
-    for (auto& r : _merge_circle.circles){
+    for (auto& r : merge_circles.circles){
         wp.pose.position.x = r.center.x;
         wp.pose.position.y = r.center.y;
         D_WPArray.markers.push_back(markergenerator(wp,r.radius,0.1,num,0.5));
         num++;
     }
-    merge_markerArrayPub.publish(D_WPArray);
+//    merge_markerArrayPub.publish(D_WPArray);
 }
 
 void merge_circle::viz_camera_circle(){
     D_WPArray.markers.clear();
-    wp.pose.position.x = 0.05;
-    wp.pose.position.y = 0.3;
-    D_WPArray.markers.push_back(markergenerator(wp,0.2,0.1,num,0.0));
+    for(auto& r : camera_circle.circles){
+        wp.pose.position.x = r.center.x;
+        wp.pose.position.y = r.center.y;
+        D_WPArray.markers.push_back(markergenerator(wp,r.radius,0.1,num,0.0));
+        num++;
+    }
     camera_markerArrayPub.publish(D_WPArray);
-    num++;
 }
 
 void merge_circle::lidarCallback(sensor_fusion::Obstacles _lidar_circle ){
     lidar_circle = _lidar_circle;
 }
 
-void merge_circle::CameraCallback(){
-
+void merge_circle::CameraCallback(sensor_fusion::CameraObstacle _camera_obstacle){
+    for(auto& r: _camera_obstacle.camera_obstacle){
+        sensor_fusion::CircleObstacle c;
+        if(r.angle <= 0){
+            double d = (r.distance*1/cos(abs(r.angle)));
+            d = d + r.width/2;
+            c.radius = r.width;
+            c.center.x = - d*sin(abs(r.angle));
+            c.center.y = r.distance;
+        }
+        else{
+            double d = (r.distance*1/cos(abs(r.angle)));
+            d = d + r.width/2;
+            c.radius = r.width;
+            c.center.x = d*sin(abs(r.angle));
+            c.center.y = r.distance;
+        }
+        camera_circle.circles.push_back(c);
+    }
 }
 
 void merge_circle::merge(){
-    _merge_circle.circles.clear();
-    int j =0;
+    merge_circles.circles.clear();
+    sensor_fusion::CircleObstacle tmp;
     for (auto& r : lidar_circle.circles){
-        double distance = pow(pow(r.center.x-0.05,2)+pow(r.center.y-0.3,2),0.5);
-        if(distance-0.2 < r.radius){
-            _merge_circle.circles.push_back(r);
-            if(distance+0.2 >= r.radius)
-                _merge_circle.circles[j].radius = distance + 0.2;
-            j++;
+        for(auto & c_r : camera_circle.circles){
+            double distance = pow(pow(r.center.x-c_r.center.x,2)+pow(r.center.y-c_r.center.y,2),0.5);
+            if(distance-c_r.radius < r.radius){
+                double rate; rate = c_r.radius/r.radius;
+                tmp.center.x = (c_r.center.x + rate*r.center.x)/(1+rate);
+                tmp.center.y = (c_r.center.y + rate*r.center.y)/(1+rate);
+                double l_radius; double c_radius;
+                l_radius = (distance/(1+rate))+r.radius ; c_radius = (distance*rate/(1+rate)) + c_r.radius;
+                if(l_radius >= c_radius){
+                    tmp.radius = l_radius;
+                }
+                else{
+                    tmp.radius = c_radius;
+                }
+                merge_circles.circles.push_back(tmp);
+           }
         }
     }
 }

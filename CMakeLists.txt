@@ -74,7 +74,7 @@ find_package(catkin REQUIRED COMPONENTS
 #   Action2.action
 # )
 
-add_message_files(FILES CircleObstacle.msg SegmentObstacle.msg Obstacles.msg)
+add_message_files(FILES CircleObstacle.msg SegmentObstacle.msg Obstacles.msg CameraObstacle.msg C_Obstacle.msg)
 generate_messages(DEPENDENCIES std_msgs geometry_msgs sensor_msgs)
 
 
