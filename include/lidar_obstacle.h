@@ -2,7 +2,7 @@
 #include<sensor_msgs/PointCloud.h>
 #include<point.h>
 #include<segment.h>
-
+#include<circle.h>
 using namespace sensor_fusion;
 
 #define PI 3.141592
@@ -13,6 +13,7 @@ class lidar_obstacle{
         sensor_msgs::PointCloud bound_point;
         std::list<Point> point_set;
         std::list<Segment> segment_set;
+        std::list<Circle> circle_set;
         std::list<Point>::iterator p_iter;
         double max_distance = 10;
         double min_distance = 0.5;
@@ -24,4 +25,6 @@ class lidar_obstacle{
         ~lidar_obstacle();
         void pointCallback(sensor_msgs::PointCloud p);   // check 
         void detect_segment();
+        void detect_circle();
+
 };

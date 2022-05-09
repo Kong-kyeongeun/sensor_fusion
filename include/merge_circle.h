@@ -5,11 +5,11 @@
 #include "geometry_msgs/PoseStamped.h"
 #include <visualization_msgs/MarkerArray.h>
 #include <visualization_msgs/Marker.h>
-#include "sensor_fusion/Obstacles.h"
 #include "sensor_fusion/CircleObstacle.h"
 #include "sensor_fusion/SegmentObstacle.h"
 #include "sensor_fusion/CameraObstacle.h"
 #include "sensor_fusion/C_Obstacle.h"
+#include "sensor_fusion/Obstacles.h"
 #include "point.h"
 
 using namespace sensor_fusion;
