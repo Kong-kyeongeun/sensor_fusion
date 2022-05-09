@@ -69,9 +69,7 @@ void lidar_obstacle::detect_circle(){
         Point center = (_start + _end - radius * norm) / 2.0;
         Circle c = Circle(center, radius);
         circle_set.push_back(c);
-        // Point first_point;
-        // Point last_point;
-        // Point closest_point;
+
     }
 
 
