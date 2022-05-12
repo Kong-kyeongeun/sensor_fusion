@@ -80,7 +80,8 @@ void merge_circle::lidarCallback(sensor_fusion::Obstacles _lidar_circle ){
     lidar_circle = _lidar_circle;
 }
 
-void merge_circle::CameraCallback(sensor_fusion::CameraObstacle _camera_obstacle){
+void merge_circle::CameraCallback(sensor_fusion::C_Obstacles _camera_obstacle){
+    camera_circle.circles.clear();
     for(auto& r: _camera_obstacle.camera_obstacle){
         sensor_fusion::CircleObstacle c;
         if(r.angle <= 0){

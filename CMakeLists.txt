@@ -74,7 +74,7 @@ find_package(catkin REQUIRED COMPONENTS
 #   Action2.action
 # )
 
-add_message_files(FILES CircleObstacle.msg SegmentObstacle.msg Obstacles.msg CameraObstacle.msg C_Obstacle.msg)
+add_message_files(FILES CircleObstacle.msg SegmentObstacle.msg Obstacles.msg C_Obstacles.msg C_Obstacle.msg)
 generate_messages(DEPENDENCIES std_msgs geometry_msgs sensor_msgs)
 
 
@@ -109,10 +109,10 @@ generate_messages(DEPENDENCIES std_msgs geometry_msgs sensor_msgs)
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES sensor_fusion
-#  CATKIN_DEPENDS geometry_msgs laser_geometry message_generation roscpp rviz sensor_msgs std_msgs tf
-#  DEPENDS system_lib
+  INCLUDE_DIRS include
+  LIBRARIES sensor_fusion 
+  CATKIN_DEPENDS geometry_msgs laser_geometry message_generation roscpp rviz sensor_msgs std_msgs tf 
+  DEPENDS system_lib
 )
 
 ###########
@@ -124,6 +124,7 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+
 )
 
 ## Declare a C++ library
@@ -211,6 +212,9 @@ add_executable(merge_circle src/merge_circle.cpp)
 target_link_libraries(merge_circle
     ${catkin_LIBRARIES}
 )
+add_dependencies(merge_circle ${${PROJECT_NAME}_EXPORTED_TARGETS} ${caktin_EXPORTED_TARGETS})
+
+
 add_executable(lidar_obstacle src/lidar_obstacle.cpp)
 target_link_libraries(lidar_obstacle
     ${catkin_LIBRARIES}

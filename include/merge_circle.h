@@ -5,12 +5,17 @@
 #include "geometry_msgs/PoseStamped.h"
 #include <visualization_msgs/MarkerArray.h>
 #include <visualization_msgs/Marker.h>
-#include "sensor_fusion/CircleObstacle.h"
+
+
+
 #include "sensor_fusion/SegmentObstacle.h"
-#include "sensor_fusion/CameraObstacle.h"
-#include "sensor_fusion/C_Obstacle.h"
+#include "sensor_fusion/C_Obstacles.h"
+#include "sensor_fusion/CircleObstacle.h"
 #include "sensor_fusion/Obstacles.h"
+#include "sensor_fusion/C_Obstacle.h"
 #include "point.h"
+
+
 
 using namespace sensor_fusion;
 
@@ -26,7 +31,7 @@ class merge_circle{
         geometry_msgs::PoseArray lidar_circle_array;
         geometry_msgs::PoseStamped wp;
         visualization_msgs::MarkerArray D_WPArray;
-        sensor_fusion::CameraObstacle camera_obstacle;
+        sensor_fusion::C_Obstacles camera_obstacle;
         sensor_fusion::Obstacles lidar_circle;
         sensor_fusion::Obstacles camera_circle;
         sensor_fusion::Obstacles merge_circles;
@@ -38,7 +43,7 @@ class merge_circle{
         ~merge_circle();
 
         void lidarCallback(sensor_fusion::Obstacles _lidar_circle );
-        void CameraCallback(sensor_fusion::CameraObstacle _camera_obstacle ); // to edit
+        void CameraCallback(sensor_fusion::C_Obstacles _camera_obstacle ); // to edit
         void viz_lidar_circle();
         void viz_camera_circle();
         void viz_merge_circle();
