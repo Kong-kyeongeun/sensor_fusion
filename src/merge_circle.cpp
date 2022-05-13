@@ -62,7 +62,7 @@ void merge_circle::viz_merge_circle(){
         D_WPArray.markers.push_back(markergenerator(wp,r.radius,0.1,num,0.5));
         num++;
     }
-//    merge_markerArrayPub.publish(D_WPArray);
+    merge_markerArrayPub.publish(D_WPArray);
 }
 
 void merge_circle::viz_camera_circle(){
@@ -84,20 +84,30 @@ void merge_circle::CameraCallback(sensor_fusion::C_Obstacles _camera_obstacle){
     camera_circle.circles.clear();
     for(auto& r: _camera_obstacle.camera_obstacle){
         sensor_fusion::CircleObstacle c;
-        if(r.angle <= 0){
-            double d = (r.distance*1/cos(abs(r.angle)));
-            d = d + r.width/2;
-            c.radius = r.width;
-            c.center.x = - d*sin(abs(r.angle));
-            c.center.y = r.distance;
+        if(r.angle > 42){
+            std::cout << r.angle <<'\n';
         }
-        else{
-            double d = (r.distance*1/cos(abs(r.angle)));
-            d = d + r.width/2;
-            c.radius = r.width;
-            c.center.x = d*sin(abs(r.angle));
-            c.center.y = r.distance;
+        if(r.angle < -42){
+            std::cout << r.angle <<'\n';
         }
+        c.radius = r.width/2;
+        c.center.x = r.distance;
+        c.center.y = -r.distance*tan(r.angle*PI/180);
+
+//         if(r.angle <= 0){
+//             double d = (r.distance*1/cos(abs(r.angle*180/PI)));
+//  //           d = d + r.width/2;
+//             c.radius = r.width/2;
+//             c.center.x = - d*sin(abs(r.angle));
+//             c.center.y = r.distance;
+//         }
+//         else{
+//             double d = (r.distance*1/cos(abs(r.angle*180/PI)));
+//             //d = d + r.width/2;
+//             c.radius = r.width/2;
+//             c.center.x = d*sin(abs(r.angle));
+//             c.center.y = r.distance;
+//         }
         camera_circle.circles.push_back(c);
     }
 }
@@ -108,6 +118,7 @@ void merge_circle::merge(){
     for (auto& r : lidar_circle.circles){
         for(auto & c_r : camera_circle.circles){
             double distance = pow(pow(r.center.x-c_r.center.x,2)+pow(r.center.y-c_r.center.y,2),0.5);
+
             if(distance-c_r.radius < r.radius){
                 double rate; rate = c_r.radius/r.radius;
                 tmp.center.x = (c_r.center.x + rate*r.center.x)/(1+rate);
@@ -122,9 +133,13 @@ void merge_circle::merge(){
                 }
                 merge_circles.circles.push_back(tmp);
            }
+           else{
+
+           }
         }
     }
 }
+
 
 int main(int argc, char** argv){
     ros::init(argc, argv, "merge_sensor");
