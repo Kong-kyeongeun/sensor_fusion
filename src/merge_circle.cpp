@@ -118,24 +118,66 @@ void merge_circle::merge(){
     for (auto& r : lidar_circle.circles){
         for(auto & c_r : camera_circle.circles){
             double distance = pow(pow(r.center.x-c_r.center.x,2)+pow(r.center.y-c_r.center.y,2),0.5);
+            if(distance+c_r.radius <= r.radius){
+                merge_circles.circles.push_back(r);
+            }
+            else if(distance+r.radius <= c_r.radius){
+                merge_circles.circles.push_back(c_r);
+            }
+            else if(distance < r.radius + c_r.radius){
+                
+                // double rate; rate = c_r.radius/r.radius;
+                // tmp.center.x = (c_r.center.x + rate*r.center.x)/(1+rate);
+                // tmp.center.y = (c_r.center.y + rate*r.center.y)/(1+rate);
+                // double l_radius; double c_radius;
+                // l_radius = (distance/(1+rate))+r.radius ; c_radius = (distance*rate/(1+rate)) + c_r.radius;
+                // if(l_radius >= c_radius){
+                // tmp.radius = l_radius;
+                // }
+                // else{
+                // tmp.radius = c_radius;
+                // }
+                // merge_circles.circles.push_back(tmp);
 
-            if(distance-c_r.radius < r.radius){
-                double rate; rate = c_r.radius/r.radius;
-                tmp.center.x = (c_r.center.x + rate*r.center.x)/(1+rate);
-                tmp.center.y = (c_r.center.y + rate*r.center.y)/(1+rate);
-                double l_radius; double c_radius;
-                l_radius = (distance/(1+rate))+r.radius ; c_radius = (distance*rate/(1+rate)) + c_r.radius;
-                if(l_radius >= c_radius){
-                    tmp.radius = l_radius;
-                }
-                else{
-                    tmp.radius = c_radius;
-                }
+                Point tmp_v; Point tmp_l; Point tmp_c;
+                tmp_v.x = c_r.center.x - r.center.x; // lidar에서 camera 방향
+                tmp_v.y = c_r.center.y - r.center.y;
+                tmp_v = tmp_v.normalized();
+                
+                tmp_c.x = c_r.center.x + c_r.radius*tmp_v.x;
+                tmp_c.y = c_r.center.y + c_r.radius*tmp_v.y;
+
+                tmp_l.x = r.center.x + -r.radius*tmp_v.x;
+                tmp_l.y = r.center.y + -r.radius*tmp_v.y;  
+                
+                tmp.radius = (distance+ r.radius + c_r.radius)/2; 
+                tmp.center.x = (tmp_c.x+tmp_l.x)/2;
+                tmp.center.y = (tmp_c.y+tmp_l.y)/2;
+
                 merge_circles.circles.push_back(tmp);
            }
-           else{
-
-           }
+        }
+    }
+    for (auto& c_r : camera_circle.circles){
+        bool ex = false;
+        for(auto & r : merge_circles.circles){
+            double distance = pow(pow(r.center.x-c_r.center.x,2)+pow(r.center.y-c_r.center.y,2),0.5);
+            if(distance < r.radius + c_r.radius)
+                ex = true;
+        }
+        if(!ex){
+            merge_circles.circles.push_back(c_r);
+        }
+    }
+    for (auto& l_r : lidar_circle.circles){
+        bool ex = false;
+        for(auto & r : merge_circles.circles){
+            double distance = pow(pow(r.center.x-l_r.center.x,2)+pow(r.center.y-l_r.center.y,2),0.5);
+            if(distance < r.radius + l_r.radius)
+                ex = true;
+        }
+        if(!ex){
+            merge_circles.circles.push_back(l_r);
         }
     }
 }
@@ -169,3 +211,17 @@ int main(int argc, char** argv){
 // obstacle_detector/SegmentObstacle[] segments
 // obstacle_detector/CircleObstacle[] circles
 
+// if(distance < r.radius + c_r.radius){
+//     double rate; rate = c_r.radius/r.radius;
+//     tmp.center.x = (c_r.center.x + rate*r.center.x)/(1+rate);
+//     tmp.center.y = (c_r.center.y + rate*r.center.y)/(1+rate);
+//     double l_radius; double c_radius;
+//     l_radius = (distance/(1+rate))+r.radius ; c_radius = (distance*rate/(1+rate)) + c_r.radius;
+//     if(l_radius >= c_radius){
+//         tmp.radius = l_radius;
+//     }
+//     else{
+//         tmp.radius = c_radius;
+//     }
+//     merge_circles.circles.push_back(tmp);
+// }

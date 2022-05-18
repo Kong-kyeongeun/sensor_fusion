@@ -15,8 +15,6 @@
 #include "sensor_fusion/C_Obstacle.h"
 #include "point.h"
 
-
-
 using namespace sensor_fusion;
 
 class merge_circle{
